@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const donorDropdownBtn = document.getElementById('donor-dropdown-btn');
     const donorDropdownContent = document.getElementById('donor-dropdown-content');
 
-    const BASE_API_URL = 'http://donoryuk.xyz/donoryuk_backend/api/';
+    const BASE_API_URL = 'https://donoryuk.xyz/donoryuk_backend/api/';
 
 
     // Function to update navbar based on user login status

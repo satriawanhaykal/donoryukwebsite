@@ -88,10 +88,9 @@
     const qrCodeCanvas = document.getElementById('qr-code');
 
 
-    const transactionData = JSON.parse(localStorage.getItem('transactionData')); // Ambil dari localStorage
+    const transactionData = JSON.parse(localStorage.getItem('transactionData'));
 
     if (transactionData) {
-      // Menampilkan data di halaman
       confTransactionId.textContent = transactionData.transaction_id || 'Tidak Diketahui';
       confRsName.textContent = transactionData.hospital_name || 'Tidak Diketahui';
       confRsAddress.textContent = transactionData.hospital_address || 'Tidak Diketahui';
@@ -103,16 +102,15 @@
       confGolongan.textContent = transactionData.blood_group || 'Tidak Diketahui';
       confJumlah.textContent = transactionData.quantity_taken || 'Tidak Diketahui';
 
-      // --- Data untuk QR Code (ringkas untuk kemudahan scan) ---
       const qrDataForCode = [
           `TRX ID: ${transactionData.transaction_id || 'N/A'}`,
           `RS: ${transactionData.hospital_name || 'N/A'}`,
           `Nama: ${transactionData.user_name || 'N/A'}`,
           `Gol: ${transactionData.blood_group || 'N/A'}`,
           `Jml: ${transactionData.quantity_taken || 'N/A'}`
-      ].filter(item => !item.includes('N/A')); // Filter baris yang tidak lengkap
+      ].filter(item => !item.includes('N/A'));
 
-      const qrText = qrDataForCode.join('\n'); // Gabungkan dengan newline
+      const qrText = qrDataForCode.join('\n');
 
       if (qrText) {
           try {
@@ -137,7 +135,6 @@
       }
 
 
-      // --- Link Google Maps ---
       let mapQuery = '';
       if (transactionData.hospital_latitude && transactionData.hospital_longitude) {
           mapQuery = `${transactionData.hospital_latitude},${transactionData.hospital_longitude}`;
@@ -148,7 +145,7 @@
       if (mapQuery) {
           gmapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
       } else {
-          gmapsBtn.style.display = 'none'; // Sembunyikan tombol jika tidak ada info lokasi
+          gmapsBtn.style.display = 'none';
       }
 
     } else {

@@ -54,7 +54,10 @@
       <input type="hidden" id="hospital-address-form" name="hospital_address">
       <input type="hidden" id="hospital-phone-form" name="hospital_phone">
       <input type="hidden" id="hospital-hours-form" name="hospital_hours">
-      <input type="hidden" id="hospital-latitude-form" name="hospital_latitude"> <input type="hidden" id="hospital-longitude-form" name="hospital_longitude"> <label for="nama">Nama Lengkap Pengambil:</label>
+      <input type="hidden" id="hospital-latitude-form" name="hospital_latitude">
+      <input type="hidden" id="hospital-longitude-form" name="hospital_longitude">
+
+      <label for="nama">Nama Lengkap Pengambil:</label>
       <input type="text" id="nama" name="user_name" required>
 
       <label for="alamat">Alamat Pengambil:</label>
@@ -80,8 +83,8 @@
 
     <script src="navbar-script.js"></script>
     <script>
-        const BASE_API_URL = 'http://donoryuk.xyz/donoryuk_backend/api/';
-        
+        const BASE_API_URL = 'https://donoryuk.xyz/donoryuk_backend/api/';
+
         const urlParams = new URLSearchParams(window.location.search);
         const hospitalId = urlParams.get('id');
 
@@ -99,8 +102,8 @@
         const hospitalAddressForm = document.getElementById('hospital-address-form');
         const hospitalPhoneForm = document.getElementById('hospital-phone-form');
         const hospitalHoursForm = document.getElementById('hospital-hours-form');
-        const hospitalLatitudeForm = document.getElementById('hospital-latitude-form'); // Tambah ini
-        const hospitalLongitudeForm = document.getElementById('hospital-longitude-form'); // Tambah ini
+        const hospitalLatitudeForm = document.getElementById('hospital-latitude-form');
+        const hospitalLongitudeForm = document.getElementById('hospital-longitude-form');
 
         async function loadHospitalDetailsForForm() {
             if (!hospitalId) {
@@ -113,13 +116,12 @@
             }
 
             try {
-                // Perbaiki: Panggil API untuk mendapatkan detail satu rumah sakit
                 const response = await fetch(`${BASE_API_URL}hospitals.php?id=${hospitalId}`);
                 const data = await response.json();
 
                 loadingHospitalInfo.style.display = 'none';
 
-                if (response.ok && data.success && data.hospital) { // Perubahan: data.hospital
+                if (response.ok && data.success && data.hospital) {
                     const hospital = data.hospital;
 
                     hospitalInfoDisplay.style.display = 'block';
@@ -128,14 +130,13 @@
                     displayHospitalPhone.textContent = hospital.phone || 'Tidak Tersedia';
                     displayHospitalHours.textContent = hospital.hours || 'Tidak Tersedia';
 
-                    // Set hidden form fields
                     hospitalIdForm.value = hospital.id;
                     hospitalNameForm.value = hospital.name;
                     hospitalAddressForm.value = hospital.address;
                     hospitalPhoneForm.value = hospital.phone || '';
                     hospitalHoursForm.value = hospital.hours || '';
-                    hospitalLatitudeForm.value = hospital.latitude || ''; // Simpan latitude
-                    hospitalLongitudeForm.value = hospital.longitude || ''; // Simpan longitude
+                    hospitalLatitudeForm.value = hospital.latitude || '';
+                    hospitalLongitudeForm.value = hospital.longitude || '';
 
                     formTitle.textContent = `Formulir Pengambilan Darah di ${hospital.name}`;
                 } else {
@@ -164,8 +165,8 @@
             hospital_address: hospitalAddressForm.value,
             hospital_phone: hospitalPhoneForm.value,
             hospital_hours: hospitalHoursForm.value,
-            hospital_latitude: hospitalLatitudeForm.value, // Tambah ini
-            hospital_longitude: hospitalLongitudeForm.value, // Tambah ini
+            hospital_latitude: hospitalLatitudeForm.value,
+            hospital_longitude: hospitalLongitudeForm.value,
             blood_group: document.getElementById('golongan').value,
             quantity_taken: parseInt(document.getElementById('jumlah').value),
             user_name: document.getElementById('nama').value,
@@ -205,9 +206,7 @@
 
             if (result.success) {
               alert(result.message);
-              // Simpan semua detail transaksi, termasuk detail rumah sakit yang sudah ada
-              // Ini akan diteruskan ke halaman konfirmasi
-              localStorage.setItem('transactionData', JSON.stringify(result.transaction_details)); // Ubah kunci menjadi transactionData
+              localStorage.setItem('transactionData', JSON.stringify(result.transaction_details));
               window.location.href = "konfirmasi-ambil.html";
             } else {
               alert('Pengambilan darah gagal: ' + (result.message || 'Terjadi kesalahan tidak diketahui.'));

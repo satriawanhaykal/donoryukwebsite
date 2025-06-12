@@ -85,34 +85,29 @@
         }
 
         loadingStockMessage.style.display = 'block';
-        stokListContainer.innerHTML = ''; // Bersihkan kontainer stok sebelumnya
+        stokListContainer.innerHTML = '';
 
         try {
-            // Perbaiki: Panggil API untuk mendapatkan detail satu rumah sakit jika tersedia
-            // Jika tidak, tetap panggil getAll dan filter di frontend
-            const response = await fetch(`${BASE_API_URL}hospitals.php?id=${hospitalId}`); // Coba panggil dengan ID
+            const response = await fetch(`${BASE_API_URL}hospitals.php?id=${hospitalId}`);
             const data = await response.json();
 
             loadingStockMessage.style.display = 'none';
 
-            if (response.ok && data.success && data.hospital) { // Perubahan: data.hospital (singular)
+            if (response.ok && data.success && data.hospital) {
                 const hospital = data.hospital;
 
                 hospitalDetailTitle.textContent = `Detail ${hospital.name}`;
                 detailHospitalName.textContent = hospital.name;
                 detailHospitalAddress.textContent = hospital.address;
-                detailHospitalPhone.textContent = hospital.phone || 'Tidak Tersedia';
                 detailHospitalHours.textContent = hospital.hours || 'Tidak Tersedia';
 
                 stokListContainer.innerHTML = '';
                 const bloodGroupsOrder = ['A', 'B', 'AB', 'O'];
                 let hasStockDisplayed = false;
 
-                // Tampilkan stok darah
                 bloodGroupsOrder.forEach(group => {
-                    // Pastikan blood_stock ada dan group ada di dalamnya
                     const quantity = (hospital.blood_stock && hospital.blood_stock[group] !== undefined) ? hospital.blood_stock[group] : 0;
-                    const percentage = (quantity / 20) * 100; // Asumsi max 20 kantong untuk visualisasi bar
+                    const percentage = (quantity / 20) * 100;
 
                     const stokItem = document.createElement('div');
                     stokItem.classList.add('stok-item');
@@ -131,15 +126,14 @@
                     noStockMessage.style.display = 'block';
                     stokListContainer.appendChild(noStockMessage);
                 } else {
-                     noStockMessage.style.display = 'none'; // Sembunyikan jika ada stok
+                     noStockMessage.style.display = 'none';
                 }
 
 
-                // Set link tombol "Ambil Darah"
                 ambilDarahBtn.href = `ambil-darah.html?id=${hospital.id}`;
 
 
-            } else if (response.ok && data.success && data.hospitals) { // Fallback jika API lama masih dipakai
+            } else if (response.ok && data.success && data.hospitals) {
                  const hospital = data.hospitals.find(h => h.id == hospitalId);
                  if(hospital){
                      hospitalDetailTitle.textContent = `Detail ${hospital.name}`;
