@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tentang Kami - Donor Yuk!</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-image">
+        <img src="logo.png" alt="Logo">
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="about-container">
+    <h1>Tentang Kami</h1>
+    <p>
+      <span class="highlight">Donor Yuk!</span> adalah platform yang berfokus pada kemudahan akses informasi dan koneksi antara pendonor dan penerima darah, khususnya di wilayah <span class="highlight">Yogyakarta</span>. Kami percaya bahwa satu tetes darah dapat menyelamatkan banyak nyawa, dan dengan teknologi, proses donor darah bisa menjadi lebih cepat, transparan, dan terjangkau untuk semua kalangan.
+    </p>
+    <br/>
+    <p>
+      Di Yogyakarta, kebutuhan darah terus meningkat, terutama dari rumah sakit besar seperti <span class="highlight">RSUP Dr. Sardjito</span>, <span class="highlight">RS Bethesda</span>, dan <span class="highlight">RSUD Kota Yogyakarta</span>. Sayangnya, banyak pasien masih kesulitan mendapatkan darah sesuai golongan dan waktu yang dibutuhkan. Karena itu, <span class="highlight">Donor Yuk!</span> hadir sebagai solusi jembatan kemanusiaan antara mereka yang membutuhkan dan mereka yang bersedia membantu.
+    </p>
+  </div>
+  <script src="navbar-script.js"></script>
+</body>
+</html>

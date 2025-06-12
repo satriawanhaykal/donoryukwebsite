@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Donor Yuk! - Daftar Rumah Sakit</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-image">
+        <img src="logo.png" alt="Logo"/>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="donor-section">
+    <h1 class="section-title">Daftar Rumah Sakit & Stok Darah</h1>
+    <p class="section-subtitle">Berikut informasi rumah sakit yang bekerja sama dengan <strong>Donor Yuk!</strong></p>
+
+    <div class="hospital-cards" id="hospital-cards-container">
+      <p id="loading-message">Memuat data rumah sakit...</p>
+      <p id="no-hospitals-message" style="display:none;">Tidak ada rumah sakit yang terdaftar.</p>
+    </div>
+  </section>
+
+  <script src="navbar-script.js"></script>
+  <script>
+    // Tambahkan baris ini untuk mendefinisikan BASE_API_URL
+    const BASE_API_URL = 'http://localhost/PemWebTeo/donoryuk_backend/api/';
+
+    const hospitalCardsContainer = document.getElementById('hospital-cards-container');
+    const loadingMessage = document.getElementById('loading-message');
+    const noHospitalsMessage = document.getElementById('no-hospitals-message');
+    const adminDashboardNavLink = document.getElementById('admin-dashboard-nav-link');
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.role === 'admin') {
+        adminDashboardNavLink.style.display = 'block';
+    }
+
+    async function loadHospitalsForDonorPage() {
+        loadingMessage.style.display = 'block';
+        noHospitalsMessage.style.display = 'none';
+        hospitalCardsContainer.innerHTML = '';
+
+        try {
+            const response = await fetch(`${BASE_API_URL}hospitals.php?action=getAll`);
+            const data = await response.json();
+
+            loadingMessage.style.display = 'none';
+
+            if (data.success && data.hospitals.length > 0) {
+                data.hospitals.forEach(hospital => {
+                    const card = document.createElement('div');
+                    card.classList.add('hospital-card');
+
+                    let bloodListHtml = '';
+                    const bloodGroupsOrder = ['A', 'B', 'AB', 'O'];
+                    const maxQuantity = 20;
+
+                    bloodGroupsOrder.forEach(group => {
+                        const quantity = (hospital.blood_stock && hospital.blood_stock[group] !== undefined) ? hospital.blood_stock[group] : 0;
+                        const percentage = (quantity / maxQuantity) * 100;
+
+                        bloodListHtml += `
+                            <div class="blood-row">
+                                <div class="blood-type">${group}</div>
+                                <div class="bar"><div class="fill" style="width: ${percentage}%;"></div></div>
+                                <div class="blood-count">${quantity} kantong</div>
+                            </div>
+                        `;
+                    });
+
+                    card.innerHTML = `
+                        <h2>${hospital.name}</h2>
+                        <p class="address">${hospital.address}</p>
+                        <div class="stok-title">Stok Darah:</div>
+                        <div class="blood-list">
+                            ${bloodListHtml}
+                        </div>
+                        <a href="detail-rumahsakit.html?id=${hospital.id}" class="register">Lanjut</a>
+                    `;
+                    hospitalCardsContainer.appendChild(card);
+                });
+            } else {
+                noHospitalsMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error memuat rumah sakit:', error);
+            loadingMessage.textContent = 'Gagal memuat data rumah sakit. Silakan coba lagi nanti.';
+            loadingMessage.style.color = 'red';
+            loadingMessage.style.display = 'block';
+        }
+    }
+
+    loadHospitalsForDonorPage();
+  </script>
+</body>
+</html>

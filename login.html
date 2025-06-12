@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Donor Yuk!</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <h2 class="auth-title">Login</h2>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="auth-button">Login</button>
+            </form>
+            <p class="auth-footer">Belum punya akun? <a href="register.html">Daftar di sini</a></p>
+            <a href="index.html" class="back-button">Kembali ke Home</a> </div>
+    </div>
+
+    <script src="navbar-script.js"></script>
+    <script>
+        const BASE_API_URL = 'http://localhost/PemWebTeo/donoryuk_backend/api/';
+
+        document.getElementById("loginForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch(`${BASE_API_URL}login.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert('Login berhasil!');
+                    localStorage.setItem("user", JSON.stringify({
+                        fullname: data.user.fullname,
+                        email: data.user.email,
+                        role: data.user.role
+                    }));
+
+                    if (data.user.role === 'admin') {
+                        window.location.href = "admin_dashboard.html";
+                    } else {
+                        window.location.href = "index.html";
+                    }
+
+                } else {
+                    alert(`Login gagal: ${data.message || 'Email atau kata sandi salah.'}`);
+                }
+            } catch (error) {
+                console.error('Error saat login:', error);
+                alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+            }
+        });
+    </script>
+</body>
+</html>

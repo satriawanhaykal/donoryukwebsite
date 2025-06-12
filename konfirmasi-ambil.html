@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Konfirmasi Pengambilan Darah</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-image">
+        <img src="logo.png" alt="Logo">
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="confirmation-container">
+    <h1>Konfirmasi Pengambilan Darah</h1>
+    <p>Berikut adalah detail permintaan pengambilan darah Anda. Silakan tunjukkan QR Code ini kepada petugas rumah sakit untuk verifikasi.</p>
+
+    <div class="info">
+      <h3>Detail Permintaan:</h3>
+      <p><strong>ID Transaksi:</strong> <span id="conf-transaction-id">Memuat...</span></p>
+      <p><strong>Nama Pengambil:</strong> <span id="conf-nama">Memuat...</span></p>
+      <p><strong>Usia Pengambil:</strong> <span id="conf-usia">Memuat...</span></p>
+      <p><strong>Alamat Pengambil:</strong> <span id="conf-alamat">Memuat...</span></p>
+      <p><strong>Golongan Darah Dibutuhkan:</strong> <span id="conf-golongan">Memuat...</span></p>
+      <p><strong>Jumlah Kantong Dibutuhkan:</strong> <span id="conf-jumlah">Memuat...</span></p>
+      <br>
+      <h3>Detail Rumah Sakit:</h3>
+      <p><strong>Nama Rumah Sakit:</strong> <span id="conf-rs-name">Memuat...</span></p>
+      <p><strong>Alamat Rumah Sakit:</strong> <span id="conf-rs-address">Memuat...</span></p>
+      <p><strong>Nomor Telepon RS:</strong> <span id="conf-rs-phone">Memuat...</span></p>
+      <p><strong>Jam Operasional RS:</strong> <span id="conf-rs-hours">Memuat...</span></p>
+    </div>
+
+    <div class="qr-section">
+      <h2>Scan QR Code ini:</h2>
+      <canvas id="qr-code"></canvas>
+      <p style="margin-top:10px;">*QR Code ini berisi ID Transaksi Anda dan detail penting lainnya.</p>
+    </div>
+
+    <div class="map-button">
+      <a href="#" target="_blank" class="gmaps-btn">Lihat di Google Maps</a>
+    </div>
+
+    <div class="home-button">
+        <a href="index.html" class="home-btn">Kembali ke Home</a>
+    </div>
+
+  </main>
+
+  <script src="navbar-script.js"></script>
+  <script>
+    const confTransactionId = document.getElementById('conf-transaction-id');
+    const confRsName = document.getElementById('conf-rs-name');
+    const confRsAddress = document.getElementById('conf-rs-address');
+    const confRsPhone = document.getElementById('conf-rs-phone');
+    const confRsHours = document.getElementById('conf-rs-hours');
+    const confNama = document.getElementById('conf-nama');
+    const confUsia = document.getElementById('conf-usia');
+    const confAlamat = document.getElementById('conf-alamat');
+    const confGolongan = document.getElementById('conf-golongan');
+    const confJumlah = document.getElementById('conf-jumlah');
+    const gmapsBtn = document.querySelector('.gmaps-btn');
+    const qrCodeCanvas = document.getElementById('qr-code');
+
+
+    const transactionData = JSON.parse(localStorage.getItem('transactionData')); // Ambil dari localStorage
+
+    if (transactionData) {
+      // Menampilkan data di halaman
+      confTransactionId.textContent = transactionData.transaction_id || 'Tidak Diketahui';
+      confRsName.textContent = transactionData.hospital_name || 'Tidak Diketahui';
+      confRsAddress.textContent = transactionData.hospital_address || 'Tidak Diketahui';
+      confRsPhone.textContent = transactionData.hospital_phone || 'Tidak Diketahui';
+      confRsHours.textContent = transactionData.hospital_hours || 'Tidak Diketahui';
+      confNama.textContent = transactionData.user_name || 'Tidak Diketahui';
+      confUsia.textContent = transactionData.user_age || 'Tidak Diketahui';
+      confAlamat.textContent = transactionData.user_address || 'Tidak Diketahui';
+      confGolongan.textContent = transactionData.blood_group || 'Tidak Diketahui';
+      confJumlah.textContent = transactionData.quantity_taken || 'Tidak Diketahui';
+
+      // --- Data untuk QR Code (ringkas untuk kemudahan scan) ---
+      const qrDataForCode = [
+          `TRX ID: ${transactionData.transaction_id || 'N/A'}`,
+          `RS: ${transactionData.hospital_name || 'N/A'}`,
+          `Nama: ${transactionData.user_name || 'N/A'}`,
+          `Gol: ${transactionData.blood_group || 'N/A'}`,
+          `Jml: ${transactionData.quantity_taken || 'N/A'}`
+      ].filter(item => !item.includes('N/A')); // Filter baris yang tidak lengkap
+
+      const qrText = qrDataForCode.join('\n'); // Gabungkan dengan newline
+
+      if (qrText) {
+          try {
+              new QRious({
+                element: qrCodeCanvas,
+                value: qrText,
+                size: 200,
+                level: 'H'
+              });
+          } catch (e) {
+              console.error("Error generating QR code:", e);
+              qrCodeCanvas.style.display = 'none';
+              const errorMessage = document.createElement('p');
+              errorMessage.textContent = 'Gagal membuat QR Code. Pastikan library QRious dimuat dengan benar.';
+              qrCodeCanvas.parentNode.insertBefore(errorMessage, qrCodeCanvas.nextSibling);
+          }
+      } else {
+          qrCodeCanvas.style.display = 'none';
+          const errorMessage = document.createElement('p');
+          errorMessage.textContent = 'Tidak ada data yang cukup untuk membuat QR Code.';
+          qrCodeCanvas.parentNode.insertBefore(errorMessage, qrCodeCanvas.nextSibling);
+      }
+
+
+      // --- Link Google Maps ---
+      let mapQuery = '';
+      if (transactionData.hospital_latitude && transactionData.hospital_longitude) {
+          mapQuery = `${transactionData.hospital_latitude},${transactionData.hospital_longitude}`;
+      } else if (transactionData.hospital_name && transactionData.hospital_address) {
+          mapQuery = `${transactionData.hospital_name}, ${transactionData.hospital_address}`;
+      }
+
+      if (mapQuery) {
+          gmapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
+      } else {
+          gmapsBtn.style.display = 'none'; // Sembunyikan tombol jika tidak ada info lokasi
+      }
+
+    } else {
+      alert('Tidak ada data transaksi ditemukan. Kembali ke halaman utama.');
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

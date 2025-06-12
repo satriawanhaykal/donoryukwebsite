@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulir Pengambilan Darah</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-image">
+        <img src="logo.png" alt="Logo" />
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="ambil-darah-container">
+    <h1 id="form-title">Formulir Pengambilan Darah</h1>
+
+    <div id="loading-hospital-info">Memuat informasi rumah sakit...</div>
+    <div id="hospital-info-display" style="display:none;">
+        <p><strong>Rumah Sakit:</strong> <span id="display-hospital-name"></span></p>
+        <p><strong>Alamat:</strong> <span id="display-hospital-address"></span></p>
+        <p><strong>No. Telp:</strong> <span id="display-hospital-phone"></span></p>
+        <p><strong>Jam Operasional:</strong> <span id="display-hospital-hours"></span></p>
+    </div>
+
+    <form id="ambilDarahForm" class="ambil-form">
+      <input type="hidden" id="hospital-id-form" name="hospital_id">
+      <input type="hidden" id="hospital-name-form" name="hospital_name">
+      <input type="hidden" id="hospital-address-form" name="hospital_address">
+      <input type="hidden" id="hospital-phone-form" name="hospital_phone">
+      <input type="hidden" id="hospital-hours-form" name="hospital_hours">
+      <input type="hidden" id="hospital-latitude-form" name="hospital_latitude"> <input type="hidden" id="hospital-longitude-form" name="hospital_longitude"> <label for="nama">Nama Lengkap Pengambil:</label>
+      <input type="text" id="nama" name="user_name" required>
+
+      <label for="alamat">Alamat Pengambil:</label>
+      <textarea id="alamat" name="user_address" rows="3" required></textarea>
+
+      <label for="usia">Usia Pengambil:</label>
+      <input type="number" id="usia" name="user_age" min="0" required>
+
+      <label for="golongan">Golongan Darah yang Dibutuhkan:</label>
+      <select id="golongan" name="blood_group" required>
+        <option value="">-- Pilih Golongan Darah --</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="AB">AB</option>
+        <option value="O">O</option>
+      </select>
+
+      <label for="jumlah">Jumlah Kantong yang Dibutuhkan:</label>
+      <input type="number" id="jumlah" name="quantity_taken" min="1" required>
+
+      <button type="submit" class="register">Ajukan Pengambilan Darah</button>
+    </form>
+
+    <script src="navbar-script.js"></script>
+    <script>
+        const BASE_API_URL = 'http://localhost/PemWebTeo/donoryuk_backend/api/';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const hospitalId = urlParams.get('id');
+
+        const formTitle = document.getElementById('form-title');
+        const loadingHospitalInfo = document.getElementById('loading-hospital-info');
+        const hospitalInfoDisplay = document.getElementById('hospital-info-display');
+        const displayHospitalName = document.getElementById('display-hospital-name');
+        const displayHospitalAddress = document.getElementById('display-hospital-address');
+        const displayHospitalPhone = document.getElementById('display-hospital-phone');
+        const displayHospitalHours = document.getElementById('display-hospital-hours');
+
+        const ambilDarahForm = document.getElementById('ambilDarahForm');
+        const hospitalIdForm = document.getElementById('hospital-id-form');
+        const hospitalNameForm = document.getElementById('hospital-name-form');
+        const hospitalAddressForm = document.getElementById('hospital-address-form');
+        const hospitalPhoneForm = document.getElementById('hospital-phone-form');
+        const hospitalHoursForm = document.getElementById('hospital-hours-form');
+        const hospitalLatitudeForm = document.getElementById('hospital-latitude-form'); // Tambah ini
+        const hospitalLongitudeForm = document.getElementById('hospital-longitude-form'); // Tambah ini
+
+        async function loadHospitalDetailsForForm() {
+            if (!hospitalId) {
+                formTitle.textContent = 'Error: ID Rumah Sakit tidak ditemukan!';
+                loadingHospitalInfo.style.display = 'none';
+                ambilDarahForm.style.display = 'none';
+                alert('ID Rumah Sakit tidak disediakan di URL. Anda akan dialihkan kembali ke halaman Donor.');
+                window.location.href = "donor.html";
+                return;
+            }
+
+            try {
+                // Perbaiki: Panggil API untuk mendapatkan detail satu rumah sakit
+                const response = await fetch(`${BASE_API_URL}hospitals.php?id=${hospitalId}`);
+                const data = await response.json();
+
+                loadingHospitalInfo.style.display = 'none';
+
+                if (response.ok && data.success && data.hospital) { // Perubahan: data.hospital
+                    const hospital = data.hospital;
+
+                    hospitalInfoDisplay.style.display = 'block';
+                    displayHospitalName.textContent = hospital.name;
+                    displayHospitalAddress.textContent = hospital.address;
+                    displayHospitalPhone.textContent = hospital.phone || 'Tidak Tersedia';
+                    displayHospitalHours.textContent = hospital.hours || 'Tidak Tersedia';
+
+                    // Set hidden form fields
+                    hospitalIdForm.value = hospital.id;
+                    hospitalNameForm.value = hospital.name;
+                    hospitalAddressForm.value = hospital.address;
+                    hospitalPhoneForm.value = hospital.phone || '';
+                    hospitalHoursForm.value = hospital.hours || '';
+                    hospitalLatitudeForm.value = hospital.latitude || ''; // Simpan latitude
+                    hospitalLongitudeForm.value = hospital.longitude || ''; // Simpan longitude
+
+                    formTitle.textContent = `Formulir Pengambilan Darah di ${hospital.name}`;
+                } else {
+                    formTitle.textContent = 'Rumah Sakit Tidak Ditemukan!';
+                    ambilDarahForm.style.display = 'none';
+                    alert('Data rumah sakit dengan ID ini tidak ditemukan. Anda akan dialihkan kembali ke halaman Donor.');
+                    window.location.href = "donor.html";
+                }
+            } catch (error) {
+                console.error('Error memuat info rumah sakit:', error);
+                formTitle.textContent = 'Terjadi Kesalahan Jaringan!';
+                ambilDarahForm.style.display = 'none';
+                alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan. Anda akan dialihkan kembali ke halaman Donor.');
+                window.location.href = "donor.html";
+            }
+        }
+
+        loadHospitalDetailsForForm();
+
+        ambilDarahForm.addEventListener("submit", async function(e) {
+          e.preventDefault();
+
+          const dataToSubmit = {
+            hospital_id: hospitalIdForm.value,
+            hospital_name: hospitalNameForm.value,
+            hospital_address: hospitalAddressForm.value,
+            hospital_phone: hospitalPhoneForm.value,
+            hospital_hours: hospitalHoursForm.value,
+            hospital_latitude: hospitalLatitudeForm.value, // Tambah ini
+            hospital_longitude: hospitalLongitudeForm.value, // Tambah ini
+            blood_group: document.getElementById('golongan').value,
+            quantity_taken: parseInt(document.getElementById('jumlah').value),
+            user_name: document.getElementById('nama').value,
+            user_address: document.getElementById('alamat').value,
+            user_age: parseInt(document.getElementById('usia').value),
+          };
+
+          console.log("Data yang akan dikirim:", dataToSubmit);
+
+          try {
+            const response = await fetch(`${BASE_API_URL}ambil_darah.php`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(dataToSubmit)
+            });
+
+            console.log("Respons dari server:", response);
+
+            if (!response.ok) {
+                let errorMessage = `Server merespons dengan status: ${response.status} ${response.statusText}.`;
+                try {
+                    const errorData = await response.json();
+                    errorMessage += ` Pesan: ${errorData.message || 'Respons tidak memberikan pesan spesifik.'}`;
+                } catch (jsonError) {
+                    errorMessage += " Respons bukan JSON yang valid atau kosong.";
+                }
+                console.error("Kesalahan respons HTTP:", errorMessage);
+                alert('Pengambilan darah gagal: ' + errorMessage);
+                return;
+            }
+
+            const result = await response.json();
+
+            console.log("Hasil JSON dari server:", result);
+
+            if (result.success) {
+              alert(result.message);
+              // Simpan semua detail transaksi, termasuk detail rumah sakit yang sudah ada
+              // Ini akan diteruskan ke halaman konfirmasi
+              localStorage.setItem('transactionData', JSON.stringify(result.transaction_details)); // Ubah kunci menjadi transactionData
+              window.location.href = "konfirmasi-ambil.html";
+            } else {
+              alert('Pengambilan darah gagal: ' + (result.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+          } catch (error) {
+            console.error('Error saat submit pengambilan darah (catch block):', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan dan merespons JSON yang valid.');
+          }
+        });
+      </script>
+  </main>
+</body>
+</html>

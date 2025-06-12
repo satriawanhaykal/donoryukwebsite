@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donor Yuk!</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo-image">
+        <img src="logo.png" alt="Logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <p class="greeting">Halo, Selamat Datang</p>
+      <h1>
+        Temukan <span class="highlight">darah</span> yang sesuai<br />
+        dengan golongan <span class="highlight">darah</span> mu
+      </h1>
+      <p class="description">
+        Dengan <span class="highlight">Donor Yuk!</span> semua jadi lebih mudah<br />
+        Daftar sekarang gratis.
+      </p>
+      <div class="buttons" id="auth-buttons">
+        <a href="register.html" class="register">Register</a>
+        <a href="login.html" class="login">Login</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="gambar darah.png" alt="Blood Drop" />
+    </div>
+  </section>
+
+  <script src="navbar-script.js"></script>
+  <script>
+    // Logika untuk menampilkan/menyembunyikan tombol Register/Login di halaman index.html
+    const authButtons = document.getElementById("auth-buttons");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        authButtons.style.display = "none";
+    } else {
+        authButtons.style.display = "flex"; // Tampilkan jika belum login
+    }
+  </script>
+</body>
+</html>

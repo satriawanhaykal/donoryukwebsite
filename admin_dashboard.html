@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Admin - Donor Yuk!</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo-image">
+        <img src="logo.png" alt="Logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="login-navbar-link" style="display: none;"><a href="login.html">Login</a></li>
+        <li id="register-navbar-link" style="display: none;"><a href="register.html">Register</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="admin-dashboard-container">
+    <h1>Selamat Datang di Dashboard Admin</h1>
+    <p id="admin-info"></p>
+
+    <section>
+      <h2>Manajemen Rumah Sakit</h2>
+      <form id="hospital-form">
+        <input type="hidden" id="hospital-id" value="">
+        <label for="hospital-name">Nama Rumah Sakit:</label>
+        <input type="text" id="hospital-name" required><br><br>
+        <label for="hospital-address">Alamat:</label>
+        <input type="text" id="hospital-address" required><br><br>
+        <label for="hospital-phone">Nomor Telepon:</label>
+        <input type="text" id="hospital-phone" placeholder="Contoh: (021) 12345678"><br><br>
+        <label for="hospital-hours">Jam Operasional:</label>
+        <input type="text" id="hospital-hours" placeholder="Contoh: Senin-Jumat, 08:00-17:00"><br><br>
+        <label for="hospital-latitude">Latitude:</label>
+        <input type="text" id="hospital-latitude" placeholder="-7.xxxxxx"><br><br>
+        <label for="hospital-longitude">Longitude:</label>
+        <input type="text" id="hospital-longitude" placeholder="110.xxxxxx"><br><br>
+
+        <button type="submit" id="hospital-submit-btn">Tambah Rumah Sakit</button>
+        <button type="button" id="hospital-cancel-btn" class="login" style="display:none;">Batal Edit</button>
+      </form>
+
+      <h3>Daftar Rumah Sakit</h3>
+      <table id="hospital-list" class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nama</th>
+            <th>Alamat</th>
+            <th>No. Telp</th>
+            <th>Jam Operasional</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Stok Darah</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="hospital-list-body"> </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Manajemen Stok Darah</h2>
+      <label for="select-hospital-stock">Pilih Rumah Sakit:</label>
+      <select id="select-hospital-stock" required>
+        <option value="">-- Pilih Rumah Sakit --</option>
+        </select>
+
+      <div id="blood-stock-management" style="display:none;">
+          <form id="blood-stock-form" class="stock-form">
+            <input type="hidden" id="stock-hospital-id">
+            <label for="blood-group">Golongan Darah:</label>
+            <select id="blood-group" required>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="AB">AB</option>
+              <option value="O">O</option>
+            </select>
+            <label for="blood-quantity">Jumlah Kantong:</label>
+            <input type="number" id="blood-quantity" min="0" required>
+            <button type="submit">Tambah/Update Stok</button>
+          </form>
+
+          <h3>Stok Darah untuk <span id="current-hospital-name"></span>:</h3>
+          <table id="current-blood-stock-list" class="blood-stock-table">
+              <thead>
+                  <tr>
+                      <th>Golongan</th>
+                      <th>Jumlah</th>
+                      <th>Aksi</th>
+                  </tr>
+              </thead>
+              <tbody id="current-blood-stock-list-body"> </tbody>
+          </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Daftar Calon Pendonor</h2>
+      <form id="pendonor-form">
+        <input type="hidden" id="pendonor-id" value="">
+        <label for="pendonor-fullname">Nama Lengkap:</label>
+        <input type="text" id="pendonor-fullname" required><br><br>
+        <label for="pendonor-nik">NIK:</label>
+        <input type="text" id="pendonor-nik" maxlength="16" required><br><br>
+        <label for="pendonor-birthdate">Tanggal Lahir:</label>
+        <input type="date" id="pendonor-birthdate" required><br><br>
+        <label for="pendonor-gender">Jenis Kelamin:</label>
+        <select id="pendonor-gender" required>
+          <option value="">-- Pilih --</option>
+          <option value="L">Laki-laki</option>
+          <option value="P">Perempuan</option>
+        </select><br><br>
+        <label for="pendonor-blood-group">Golongan Darah:</label>
+        <select id="pendonor-blood-group" required>
+          <option value="">-- Pilih --</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="AB">AB</option>
+          <option value="O">O</option>
+        </select><br><br>
+        <label for="pendonor-rhesus">Rhesus:</label>
+        <select id="pendonor-rhesus" required>
+          <option value="">-- Pilih --</option>
+          <option value="Positif">Positif</option>
+          <option value="Negatif">Negatif</option>
+        </select><br><br>
+        <label for="pendonor-phone">Nomor Telepon:</label>
+        <input type="text" id="pendonor-phone" required><br><br>
+        <label for="pendonor-address">Alamat:</label>
+        <textarea id="pendonor-address" rows="3" required></textarea><br><br>
+        <label for="pendonor-last-donor-date">Tanggal Donor Terakhir (Opsional):</label>
+        <input type="date" id="pendonor-last-donor-date"><br><br>
+
+        <button type="submit" id="pendonor-submit-btn">Update Pendonor</button>
+        <button type="button" id="pendonor-cancel-btn" class="login" style="display:none;">Batal Edit</button>
+      </form>
+      <hr style="margin: 30px 0;">
+
+      <div id="pendonor-list-container">
+        <p class="loading-message-dashboard" id="loading-pendonor">Memuat data pendonor...</p>
+        <p class="no-records-message" id="no-pendonor-message" style="display:none;">Tidak ada calon pendonor yang terdaftar.</p>
+        <p class="error-message" id="pendonor-error-message" style="display:none;">Terjadi kesalahan saat memuat data pendonor.</p>
+        <table class="admin-table" id="pendonor-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Lengkap</th>
+              <th>NIK</th>
+              <th>Tgl Lahir</th>
+              <th>JK</th>
+              <th>Gol. Darah</th>
+              <th>Rhesus</th>
+              <th>No. Telp</th>
+              <th>Alamat</th>
+              <th>Tgl Daftar</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="pendonor-table-body"> </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Daftar Permintaan Pengambilan Darah</h2>
+      <div id="requests-list-container">
+          <p class="loading-message-dashboard" id="loading-requests">Memuat data permintaan darah...</p>
+          <p class="no-records-message" id="no-requests-message" style="display:none;">Tidak ada permintaan pengambilan darah.</p>
+          <p class="error-message" id="requests-error-message" style="display:none;">Terjadi kesalahan saat memuat data permintaan darah.</p>
+          <table class="admin-table" id="requests-table" style="display:none;">
+            <thead>
+              <tr>
+                <th>ID Transaksi</th>
+                <th>RS</th>
+                <th>Nama Pengambil</th>
+                <th>Usia</th>
+                <th>Alamat Pengambil</th>
+                <th>Gol. Darah</th>
+                <th>Jml Kantong</th>
+                <th>Status</th>
+                <th>Tgl Permintaan</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="requests-table-body"> </tbody>
+          </table>
+          </div>
+    </section>
+    <button id="logout-btn-admin" class="register">Logout</button>
+  </main>
+
+  <script src="navbar-script.js"></script>
+  <script>
+    const BASE_API_URL = 'http://localhost/PemWebTeo/donoryuk_backend/api/';
+
+    const adminInfo = document.getElementById('admin-info');
+    const logoutBtnAdmin = document.getElementById('logout-btn-admin');
+    const adminDashboardNavLink = document.getElementById('admin-dashboard-nav-link');
+
+    // --- Hospital Management elements ---
+    const hospitalListTableBody = document.querySelector('#hospital-list-body');
+    const hospitalForm = document.getElementById('hospital-form');
+    const hospitalIdInput = document.getElementById('hospital-id');
+    const hospitalNameInput = document.getElementById('hospital-name');
+    const hospitalAddressInput = document.getElementById('hospital-address');
+    const hospitalPhoneInput = document.getElementById('hospital-phone');
+    const hospitalHoursInput = document.getElementById('hospital-hours');
+    const hospitalLatitudeInput = document.getElementById('hospital-latitude');
+    const hospitalLongitudeInput = document.getElementById('hospital-longitude');
+    const hospitalSubmitBtn = document.getElementById('hospital-submit-btn');
+    const hospitalCancelBtn = document.getElementById('hospital-cancel-btn');
+
+    let allHospitalsData = []; // Untuk menyimpan data RS yang dimuat
+
+    // --- Blood Stock Management Elements ---
+    const selectHospitalStock = document.getElementById('select-hospital-stock');
+    const bloodStockManagementSection = document.getElementById('blood-stock-management');
+    const bloodStockForm = document.getElementById('blood-stock-form');
+    const stockHospitalIdInput = document.getElementById('stock-hospital-id');
+    const bloodGroupInput = document.getElementById('blood-group');
+    const bloodQuantityInput = document.getElementById('blood-quantity');
+    const currentHospitalName = document.getElementById('current-hospital-name');
+    const currentBloodStockListBody = document.querySelector('#current-blood-stock-list-body');
+
+    // --- Pendonor Management Elements ---
+    const pendonorForm = document.getElementById('pendonor-form');
+    const pendonorIdInput = document.getElementById('pendonor-id');
+    const pendonorFullnameInput = document.getElementById('pendonor-fullname');
+    const pendonorNikInput = document.getElementById('pendonor-nik');
+    const pendonorBirthdateInput = document.getElementById('pendonor-birthdate');
+    const pendonorGenderInput = document.getElementById('pendonor-gender');
+    const pendonorBloodGroupInput = document.getElementById('pendonor-blood-group');
+    const pendonorRhesusInput = document.getElementById('pendonor-rhesus');
+    const pendonorPhoneInput = document.getElementById('pendonor-phone');
+    const pendonorAddressInput = document.getElementById('pendonor-address');
+    const pendonorLastDonorDateInput = document.getElementById('pendonor-last-donor-date');
+    const pendonorSubmitBtn = document.getElementById('pendonor-submit-btn');
+    const pendonorCancelBtn = document.getElementById('pendonor-cancel-btn');
+
+    const loadingPendonor = document.getElementById('loading-pendonor');
+    const noPendonorMessage = document.getElementById('no-pendonor-message');
+    const pendonorErrorMessage = document.getElementById('pendonor-error-message');
+    const pendonorTable = document.getElementById('pendonor-table');
+    const pendonorTableBody = document.getElementById('pendonor-table-body');
+
+    // --- Permintaan Pengambilan Darah Elements ---
+    const loadingRequests = document.getElementById('loading-requests');
+    const noRequestsMessage = document.getElementById('no-requests-message');
+    const requestsErrorMessage = document.getElementById('requests-error-message');
+    const requestsTable = document.getElementById('requests-table');
+    const requestsTableBody = document.getElementById('requests-table-body');
+    const updateRequestStatusBtn = document.getElementById('update-request-status-btn');
+
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // Redirect jika bukan admin
+    if (!user || user.role !== 'admin') {
+      alert('Anda tidak memiliki izin untuk mengakses halaman ini. Silakan login sebagai admin.');
+      window.location.href = "login.html";
+    } else {
+      adminInfo.textContent = `Masuk sebagai: ${user.fullname} (Admin)`;
+      adminDashboardNavLink.style.display = 'block';
+      loadHospitals(); // Memuat data rumah sakit
+      loadPendonorData(); // Memuat data pendonor
+      loadRequestsData(); // Memuat data permintaan darah (BARU)
+    }
+
+    // --- Utility Function to escape HTML ---
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        var map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    // --- Hospital Management Functions ---
+    async function loadHospitals() {
+        console.log("loadHospitals() called.");
+        try {
+            const response = await fetch(`${BASE_API_URL}hospitals.php?action=getAll`);
+            const data = await response.json();
+            console.log("Response from hospitals.php:", data);
+
+            if (data.success) {
+                hospitalListTableBody.innerHTML = '';
+                while (selectHospitalStock.options.length > 1) {
+                    selectHospitalStock.remove(1);
+                }
+
+                allHospitalsData = data.hospitals;
+                console.log("All Hospitals Data loaded into variable:", allHospitalsData);
+
+                data.hospitals.forEach(hospital => {
+                    const row = hospitalListTableBody.insertRow();
+                    let stockDisplay = '';
+                    if (hospital.blood_stock && Object.keys(hospital.blood_stock).length > 0) {
+                        for (const group in hospital.blood_stock) {
+                            stockDisplay += `${escapeHtml(group)}: ${escapeHtml(hospital.blood_stock[group])} kantong<br>`;
+                        }
+                    } else {
+                        stockDisplay = 'Belum ada stok';
+                    }
+
+                    row.innerHTML = `
+                        <td>${escapeHtml(hospital.id)}</td>
+                        <td>${escapeHtml(hospital.name)}</td>
+                        <td>${escapeHtml(hospital.address)}</td>
+                        <td>${escapeHtml(hospital.phone || 'N/A')}</td>
+                        <td>${escapeHtml(hospital.hours || 'N/A')}</td>
+                        <td>${escapeHtml(hospital.latitude || 'N/A')}</td>
+                        <td>${escapeHtml(hospital.longitude || 'N/A')}</td>
+                        <td>${stockDisplay}</td>
+                        <td class="action-buttons">
+                            <button onclick="editHospital(${hospital.id}, '${escapeHtml(hospital.name)}', '${escapeHtml(hospital.address)}', '${escapeHtml(hospital.phone || '')}', '${escapeHtml(hospital.hours || '')}', '${escapeHtml(hospital.latitude || '')}', '${escapeHtml(hospital.longitude || '')}')">Edit</button>
+                            <button class="delete" onclick="deleteHospital(${hospital.id})">Hapus</button>
+                        </td>
+                    `;
+                    selectHospitalStock.appendChild(createOption(hospital.id, hospital.name));
+                });
+            } else {
+                console.error('API Error in loadHospitals:', data.message);
+                alert('Gagal memuat data rumah sakit: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Fetch Error in loadHospitals:', error);
+            alert('Terjadi kesalahan saat memuat data rumah sakit. Pastikan server PHP Anda berjalan.');
+        }
+    }
+
+    function createOption(value, text) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        return option;
+    }
+
+    function editHospital(id, name, address, phone, hours, latitude, longitude) {
+        hospitalIdInput.value = id;
+        hospitalNameInput.value = name;
+        hospitalAddressInput.value = address;
+        hospitalPhoneInput.value = phone;
+        hospitalHoursInput.value = hours;
+        hospitalLatitudeInput.value = latitude;
+        hospitalLongitudeInput.value = longitude;
+        hospitalSubmitBtn.textContent = 'Update Rumah Sakit';
+        hospitalCancelBtn.style.display = 'inline-block';
+    }
+
+    hospitalCancelBtn.addEventListener('click', () => {
+        hospitalIdInput.value = '';
+        hospitalNameInput.value = '';
+        hospitalAddressInput.value = '';
+        hospitalPhoneInput.value = '';
+        hospitalHoursInput.value = '';
+        hospitalLatitudeInput.value = '';
+        hospitalLongitudeInput.value = '';
+        hospitalSubmitBtn.textContent = 'Tambah Rumah Sakit';
+        hospitalCancelBtn.style.display = 'none';
+    });
+
+
+    hospitalForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = hospitalIdInput.value || null;
+        const name = hospitalNameInput.value;
+        const address = hospitalAddressInput.value;
+        const phone = hospitalPhoneInput.value;
+        const hours = hospitalHoursInput.value;
+        const latitude = hospitalLatitudeInput.value;
+        const longitude = hospitalLongitudeInput.value;
+
+        const url = `${BASE_API_URL}hospitals.php`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({ id, name, address, phone, hours, latitude, longitude })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                hospitalCancelBtn.click();
+                loadHospitals();
+            } else {
+                alert('Gagal: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat menambah/mengupdate RS:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+        }
+    });
+
+    async function deleteHospital(id) {
+        if (!confirm('Apakah Anda yakin ingin menghapus rumah sakit ini beserta semua stok darahnya?')) {
+            return;
+        }
+        try {
+            const response = await fetch(`${BASE_API_URL}hospitals.php`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({ id })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                loadHospitals();
+            } else {
+                alert('Gagal menghapus: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat menghapus RS:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+        }
+    };
+
+    // --- Blood Stock Management Functions ---
+    selectHospitalStock.addEventListener('change', () => {
+        const selectedHospitalId = selectHospitalStock.value;
+        if (selectedHospitalId) {
+            const hospital = allHospitalsData.find(h => h.id == selectedHospitalId);
+            if (hospital) {
+                stockHospitalIdInput.value = hospital.id;
+                currentHospitalName.textContent = hospital.name;
+                displayBloodStockForHospital(hospital.blood_stock);
+                bloodStockManagementSection.style.display = 'block';
+            }
+        } else {
+            bloodStockManagementSection.style.display = 'none';
+        }
+    });
+
+    function displayBloodStockForHospital(bloodStock) {
+        currentBloodStockListBody.innerHTML = '';
+        const bloodGroups = ['A', 'B', 'AB', 'O'];
+        let hasStock = false;
+
+        bloodGroups.forEach(group => {
+            const quantity = bloodStock && bloodStock[group] !== undefined ? bloodStock[group] : 0;
+            const row = currentBloodStockListBody.insertRow();
+            row.innerHTML = `
+                <td>${escapeHtml(group)}</td>
+                <td>${escapeHtml(quantity)} kantong</td>
+                <td>
+                    <button onclick="editBloodStock(${stockHospitalIdInput.value}, '${escapeHtml(group)}', ${quantity})">Edit</button>
+                    ${quantity > 0 ? `<button class="delete" onclick="deleteBloodStock(${stockHospitalIdInput.value}, '${escapeHtml(group)}')">Hapus</button>` : ''}
+                </td>
+            `;
+            if (quantity > 0) hasStock = true;
+        });
+
+        if (!hasStock && bloodGroups.length > 0) {
+            const row = currentBloodStockListBody.insertRow();
+            row.innerHTML = `<td colspan="3" style="text-align: center;">Belum ada stok darah untuk rumah sakit ini.</td>`;
+        }
+    }
+
+
+    function editBloodStock(hospitalId, bloodGroup, quantity) {
+        stockHospitalIdInput.value = hospitalId;
+        bloodGroupInput.value = bloodGroup;
+        bloodQuantityInput.value = quantity;
+        bloodGroupInput.disabled = true; // Nonaktifkan pilihan golongan darah saat mengedit
+    }
+
+    bloodStockForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const hospitalId = stockHospitalIdInput.value;
+        const bloodGroup = bloodGroupInput.value;
+        const quantity = bloodQuantityInput.value;
+
+        if (!hospitalId) {
+            alert('Silakan pilih rumah sakit terlebih dahulu.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_API_URL}blood_stock.php`, {
+                method: 'POST', // Gunakan POST untuk tambah/update stok
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({ hospital_id: hospitalId, blood_group: bloodGroup, quantity: quantity })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                await loadHospitals(); // Refresh data rumah sakit untuk memperbarui stok
+                const updatedHospital = allHospitalsData.find(h => h.id == hospitalId);
+                if (updatedHospital) {
+                    displayBloodStockForHospital(updatedHospital.blood_stock);
+                }
+                bloodQuantityInput.value = '';
+                bloodGroupInput.disabled = false; // Aktifkan kembali pilihan golongan darah
+            } else {
+                alert('Gagal: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat mengelola stok darah:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+        }
+    });
+
+    async function deleteBloodStock(hospitalId, bloodGroup) {
+        if (!confirm(`Apakah Anda yakin ingin menghapus stok darah golongan ${bloodGroup} dari rumah sakit ini?`)) {
+            return;
+        }
+        try {
+            const response = await fetch(`${BASE_API_URL}blood_stock.php`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({ hospital_id: hospitalId, blood_group: bloodGroup })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                await loadHospitals(); // Refresh data rumah sakit
+                const updatedHospital = allHospitalsData.find(h => h.id == hospitalId);
+                if (updatedHospital) {
+                    displayBloodStockForHospital(updatedHospital.blood_stock);
+                }
+            } else {
+                alert('Gagal menghapus: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat menghapus stok darah:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+        }
+    };
+
+
+    // --- Pendonor Management Functions ---
+    async function loadPendonorData() {
+        console.log("loadPendonorData() called.");
+        loadingPendonor.style.display = 'block';
+        noPendonorMessage.style.display = 'none';
+        pendonorErrorMessage.style.display = 'none';
+        pendonorTable.style.display = 'none';
+        pendonorTableBody.innerHTML = '';
+        try {
+            const response = await fetch(`${BASE_API_URL}get_pendonor.php`);
+            const result = await response.json();
+            loadingPendonor.style.display = 'none';
+            if (result.success && result.data && result.data.length > 0) {
+                pendonorTable.style.display = 'table';
+                result.data.forEach(pendonor => {
+                    const row = pendonorTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${escapeHtml(pendonor.id)}</td>
+                        <td>${escapeHtml(pendonor.fullname)}</td>
+                        <td>${escapeHtml(pendonor.nik)}</td>
+                        <td>${escapeHtml(pendonor.birthdate)}</td>
+                        <td>${escapeHtml(pendonor.gender)}</td>
+                        <td>${escapeHtml(pendonor.blood_group)}</td>
+                        <td>${escapeHtml(pendonor.rhesus)}</td>
+                        <td>${escapeHtml(pendonor.phone)}</td>
+                        <td>${escapeHtml(pendonor.address)}</td>
+                        <td>${escapeHtml(pendonor.registration_date ? pendonor.registration_date.split(' ')[0] : 'N/A')}</td>
+                        <td class="action-buttons">
+                            <button onclick="editPendonor(${pendonor.id})">Edit</button>
+                            <button class="delete" onclick="deletePendonor(${pendonor.id})">Hapus</button>
+                        </td>
+                    `;
+                });
+            } else {
+                noPendonorMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error fetching pendonor data:', error);
+            pendonorErrorMessage.style.display = 'block';
+            pendonorErrorMessage.textContent = 'Terjadi kesalahan saat menghubungi server atau memuat data pendonor. Pastikan API backend berjalan.';
+        }
+    }
+
+    // Fungsi untuk mengisi form edit pendonor
+    async function editPendonor(id) {
+        try {
+            const response = await fetch(`${BASE_API_URL}manage_pendonor.php?id=${id}`);
+            const result = await response.json();
+            if (response.ok && result.success && result.data) {
+                const pendonor = result.data;
+                pendonorIdInput.value = pendonor.id;
+                pendonorFullnameInput.value = pendonor.fullname;
+                pendonorNikInput.value = pendonor.nik;
+                pendonorBirthdateInput.value = pendonor.birthdate;
+                pendonorGenderInput.value = pendonor.gender;
+                pendonorBloodGroupInput.value = pendonor.blood_group;
+                pendonorRhesusInput.value = pendonor.rhesus;
+                pendonorPhoneInput.value = pendonor.phone;
+                pendonorAddressInput.value = pendonor.address;
+                pendonorLastDonorDateInput.value = pendonor.last_donor_date || '';
+                pendonorSubmitBtn.textContent = 'Update Pendonor';
+                pendonorCancelBtn.style.display = 'inline-block';
+            } else {
+                alert('Gagal memuat data pendonor untuk diedit: ' + (result.message || 'Terjadi kesalahan.'));
+            }
+        } catch (error) {
+            console.error('Error fetching pendonor for edit:', error);
+            alert('Terjadi kesalahan saat memuat data pendonor. Pastikan API backend berjalan.');
+        }
+    }
+
+    // Event listener untuk submit form pendonor (untuk update)
+    pendonorForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = pendonorIdInput.value;
+        const fullname = pendonorFullnameInput.value;
+        const nik = pendonorNikInput.value;
+        const birthdate = pendonorBirthdateInput.value;
+        const gender = pendonorGenderInput.value;
+        const blood_group = pendonorBloodGroupInput.value;
+        const rhesus = pendonorRhesusInput.value;
+        const phone = pendonorPhoneInput.value;
+        const address = pendonorAddressInput.value;
+        const last_donor_date = pendonorLastDonorDateInput.value || null;
+        if (!id) {
+            alert('ID pendonor tidak ditemukan untuk update.');
+            return;
+        }
+        try {
+            const response = await fetch(`${BASE_API_URL}manage_pendonor.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({
+                    id, fullname, nik, birthdate, gender, blood_group, rhesus, phone, address, last_donor_date
+                })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                pendonorCancelBtn.click();
+                loadPendonorData();
+            } else {
+                alert('Gagal memperbarui pendonor: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat update pendonor:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan API backend berjalan.');
+        }
+    });
+
+    // Event listener untuk tombol Batal Edit pendonor
+    pendonorCancelBtn.addEventListener('click', () => {
+        pendonorForm.reset();
+        pendonorIdInput.value = '';
+        pendonorSubmitBtn.textContent = 'Update Pendonor';
+        pendonorCancelBtn.style.display = 'none';
+    });
+
+
+    // Fungsi untuk menghapus pendonor
+    async function deletePendonor(id) {
+        if (!confirm('Apakah Anda yakin ingin menghapus pendonor ini? Aksi ini tidak dapat dibatalkan.')) {
+            return;
+        }
+        try {
+            const response = await fetch(`${BASE_API_URL}manage_pendonor.php`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({ id })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                loadPendonorData();
+            } else {
+                alert('Gagal menghapus: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat menghapus pendonor:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan API backend berjalan.');
+        }
+    }
+
+
+    // --- Permintaan Pengambilan Darah Functions ---
+    async function loadRequestsData() {
+        console.log("loadRequestsData() called.");
+        loadingRequests.style.display = 'block';
+        noRequestsMessage.style.display = 'none';
+        requestsErrorMessage.style.display = 'none';
+        requestsTable.style.display = 'none';
+        requestsTableBody.innerHTML = ''; // Bersihkan tabel
+
+        try {
+            const response = await fetch(`${BASE_API_URL}get_permintaan_darah.php`);
+            const result = await response.json();
+
+            loadingRequests.style.display = 'none';
+
+            if (result.success && result.data && result.data.length > 0) {
+                requestsTable.style.display = 'table';
+                result.data.forEach(request => {
+                    const row = requestsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${escapeHtml(request.transaction_id)}</td>
+                        <td>${escapeHtml(request.hospital_name || 'N/A')}</td>
+                        <td>${escapeHtml(request.user_name)}</td>
+                        <td>${escapeHtml(request.user_age)}</td>
+                        <td>${escapeHtml(request.user_address)}</td>
+                        <td>${escapeHtml(request.blood_group)}</td>
+                        <td>${escapeHtml(request.quantity_taken)}</td>
+                        <td>${escapeHtml(request.status)}</td>
+                        <td>${escapeHtml(request.request_date ? request.request_date.split(' ')[0] : 'N/A')}</td>
+                        <td class="action-buttons">
+                            <button onclick="updateRequestStatus(${request.id}, 'Dikonfirmasi')">Konfirmasi</button>
+                            <button class="delete" onclick="updateRequestStatus(${request.id}, 'Ditolak')">Tolak</button>
+                        </td>
+                    `;
+                });
+            } else {
+                noRequestsMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error fetching requests data:', error);
+            requestsErrorMessage.style.display = 'block';
+            requestsErrorMessage.textContent = 'Terjadi kesalahan saat menghubungi server atau memuat data permintaan darah. Pastikan API backend berjalan.';
+        }
+    }
+
+    // Fungsi untuk mengubah status permintaan darah
+    async function updateRequestStatus(requestId, newStatus) {
+        if (!confirm(`Apakah Anda yakin ingin mengubah status permintaan ID ${requestId} menjadi '${newStatus}'?`)) {
+            return;
+        }
+        try {
+            const response = await fetch(`${BASE_API_URL}manage_permintaan_darah.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.role}`
+                },
+                body: JSON.stringify({ id: requestId, status: newStatus })
+            });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                alert(data.message);
+                loadRequestsData(); // Refresh tabel permintaan
+            } else {
+                alert('Gagal memperbarui status permintaan: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat update status permintaan:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan API backend berjalan.');
+        }
+    }
+
+
+    // --- General Logout ---
+    logoutBtnAdmin.addEventListener("click", async () => {
+        try {
+            const response = await fetch(`${BASE_API_URL}logout.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                localStorage.removeItem("user");
+                window.location.href = "index.html";
+            } else {
+                alert('Logout gagal: ' + (data.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat logout:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+        }
+    });
+
+    // Panggil fungsi untuk memuat data saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        if (user && user.role === 'admin') {
+            loadHospitals();
+            loadPendonorData();
+            loadRequestsData();
+        }
+    });
+  </script>
+</body>
+</html>

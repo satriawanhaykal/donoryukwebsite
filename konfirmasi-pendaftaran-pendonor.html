@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pendaftaran Berhasil! - Donor Yuk!</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-image">
+        <img src="logo.png" alt="Logo">
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="confirmation-container">
+    <h1>Pendaftaran Calon Pendonor Berhasil!</h1>
+    <p>Terima kasih telah mendaftar sebagai calon pendonor darah.</p>
+
+    <div class="info">
+      <h3>Apa langkah selanjutnya?</h3>
+      <p>1. **Verifikasi Data:** Tim kami akan melakukan verifikasi data Anda dalam waktu **1x24 jam kerja**.</p>
+      <p>2. **Notifikasi:** Setelah data Anda terverifikasi, kami akan menghubungi Anda melalui **nomor WhatsApp** yang telah didaftarkan untuk menginformasikan ketersediaan jadwal donor dan lokasi rumah sakit terdekat.</p>
+      <p>3. **Persiapan Donor:** Pastikan Anda membaca dan memahami kembali kriteria donor darah serta tips persiapan sebelum donor untuk memastikan Anda memenuhi syarat saat hari-H.</p>
+    </div>
+
+    <p>Kami sangat menghargai kontribusi Anda. Dengan setetes darah Anda, Anda bisa menyelamatkan nyawa!</p>
+
+    <div class="home-button">
+      <a href="index.html" class="home-btn">Kembali ke Beranda</a>
+    </div>
+  </main>
+
+  <script src="navbar-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar Pendonor - Donor Yuk!</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-image">
+        <img src="logo.png" alt="Logo">
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" id="donor-dropdown-btn" role="button">Donor ▾</a><div class="dropdown-content" id="donor-dropdown-content">
+            <a href="daftar-pendonor.html">Menjadi Pendonor</a>
+            <a href="donor.html">Mengambil Darah</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li id="user-info-navbar" style="display: none;">
+          <span class="nav-user-info"></span>
+        </li>
+        <li id="admin-dashboard-nav-link" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+        <li id="logout-navbar-display" style="display: none;">
+          <a href="#" class="nav-logout-btn" id="logout-navbar-btn">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="pendonor-main-container">
+    <h1>Daftar Menjadi Pendonor</h1>
+    <p>Silakan baca kriteria di bawah ini dengan seksama.</p>
+
+    <div id="criteria-popup" class="popup-overlay">
+  <div class="popup-content">
+    <h2>Penting! Syarat Menjadi Pendonor Darah</h2>
+    <p>Sebelum melanjutkan, pastikan Anda memenuhi kriteria dasar berikut:</p>
+    <ul>
+      <li>Usia 17-65 tahun.</li>
+      <li>Berat badan minimal 45 kg.</li>
+      <li>Sehat jasmani dan rohani.</li>
+      <li>Tidak sedang demam, flu, atau sakit lainnya.</li>
+      <li>Tidak sedang hamil atau menyusui.</li>
+      <li>Tidak memiliki riwayat penyakit berat (jantung, paru, ginjal, dll.).</li>
+      <li>Belum pernah transfusi darah dalam 1 tahun terakhir.</li>
+      <li>Tidak mengonsumsi obat antibiotik dalam 7 hari terakhir.</li>
+      <li>Tidak mengonsumsi alkohol dalam 24 jam terakhir.</li>
+      <li>Cukup istirahat (tidur minimal 5 jam).</li>
+      <li>Jarak donor terakhir minimal 3 bulan (jika sudah pernah donor).</li>
+    </ul>
+    <div class="popup-buttons">
+      <button id="agree-criteria-btn" class="register">Saya Memenuhi Syarat & Lanjutkan</button>
+      <button id="disagree-criteria-btn" class="login">Saya Belum Memenuhi Syarat</button>
+    </div>
+  </div>
+</div>
+
+    <div id="donor-form-section" class="ambil-darah-container" style="display: none;">
+        <h2>Formulir Data Diri Pendonor</h2>
+        <form id="donorForm" class="ambil-form">
+            <label for="fullname">Nama Lengkap:</label>
+            <input type="text" id="fullname" name="fullname" required>
+
+            <label for="nik">NIK (Nomor Induk Kependudukan):</label>
+            <input type="text" id="nik" name="nik" minlength="16" maxlength="16" required>
+
+            <label for="birthdate">Tanggal Lahir:</label>
+            <input type="date" id="birthdate" name="birthdate" required>
+
+            <label for="gender">Jenis Kelamin:</label>
+            <select id="gender" name="gender" required>
+                <option value="">-- Pilih --</option>
+                <option value="L">Laki-laki</option>
+                <option value="P">Perempuan</option>
+            </select>
+
+            <label for="blood-group">Golongan Darah:</label>
+            <select id="blood-group" name="blood_group" required>
+                <option value="">-- Pilih Golongan Darah --</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="AB">AB</option>
+                <option value="O">O</option>
+            </select>
+
+            <label for="rhesus">Rhesus: <span class="info-text">(Tipe darah Anda: Positif / Negatif)</span></label>
+            <select id="rhesus" name="rhesus" required>
+                <option value="">-- Pilih --</option>
+                <option value="Positif">Positif</option>
+                <option value="Negatif">Negatif</option>
+            </select>
+
+            <label for="phone">Nomor Telepon (WhatsApp):</label>
+            <input type="tel" id="phone" name="phone" placeholder="Contoh: 081234567890" required>
+
+            <label for="address">Alamat Lengkap:</label>
+            <textarea id="address" name="address" rows="3" required></textarea>
+
+            <label for="last-donor-date">Tanggal Donor Terakhir (Opsional):</label>
+            <input type="date" id="last-donor-date" name="last_donor_date">
+
+            <button type="submit" class="register">Daftar sebagai Pendonor</button>
+        </form>
+    </div>
+  </main>
+
+  <script src="navbar-script.js"></script>
+  <script>
+    // Pastikan BASE_API_URL sudah benar
+    const BASE_API_URL = 'http://localhost/PemWebTeo/donoryuk_backend/api/';
+
+    const criteriaPopup = document.getElementById('criteria-popup');
+    const agreeCriteriaBtn = document.getElementById('agree-criteria-btn');
+    const disagreeCriteriaBtn = document.getElementById('disagree-criteria-btn');
+    const donorFormSection = document.getElementById('donor-form-section');
+    const donorForm = document.getElementById('donorForm');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tampilkan pop-up saat halaman dimuat
+        criteriaPopup.style.display = 'flex'; // Gunakan flex untuk centering
+    });
+
+    agreeCriteriaBtn.addEventListener('click', () => {
+        criteriaPopup.style.display = 'none'; // Sembunyikan pop-up
+        donorFormSection.style.display = 'block'; // Tampilkan form
+    });
+
+    disagreeCriteriaBtn.addEventListener('click', () => {
+        alert('Maaf, Anda tidak memenuhi kriteria untuk menjadi pendonor saat ini. Silakan cek kembali nanti.');
+        window.location.href = 'konfirmasi-pendaftaran-pendonor.html'; // Kembali ke halaman utama
+    });
+
+    donorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(donorForm);
+        const data = Object.fromEntries(formData.entries());
+
+        // Konversi NIK menjadi string (jika input type="text")
+        data.nik = String(data.nik);
+
+        // Tambahan validasi sisi klien sederhana untuk NIK
+        if (data.nik.length !== 16 || !/^\d+$/.test(data.nik)) {
+            alert('NIK harus terdiri dari 16 digit angka.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_API_URL}daftar_pendonor.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                donorForm.reset(); // Reset form
+                window.location.href = 'index.html'; // Kembali ke halaman utama
+            } else {
+                alert('Pendaftaran gagal: ' + (result.message || 'Terjadi kesalahan tidak diketahui.'));
+            }
+        } catch (error) {
+            console.error('Error saat mendaftar pendonor:', error);
+            alert('Terjadi kesalahan saat menghubungi server. Pastikan server PHP Anda berjalan.');
+        }
+    });
+  </script>
+</body>
+</html>
