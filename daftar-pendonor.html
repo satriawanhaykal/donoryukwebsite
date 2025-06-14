@@ -102,6 +102,9 @@
             <label for="phone">Nomor Telepon (WhatsApp):</label>
             <input type="tel" id="phone" name="phone" placeholder="Contoh: 081234567890" required>
 
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
             <label for="address">Alamat Lengkap:</label>
             <textarea id="address" name="address" rows="3" required></textarea>
 
@@ -125,16 +128,24 @@
   <script>
     const BASE_API_URL = 'https://donoryuk.xyz/donoryuk_backend/api/';
 
+    // --- Validasi Wajib Login ---
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.id) {
+        alert('Anda harus login terlebih dahulu untuk mendaftar sebagai pendonor.');
+        window.location.href = 'login.html';
+    }
+    // --- Akhir Validasi Wajib Login ---
+
     const criteriaPopup = document.getElementById('criteria-popup');
     const agreeCriteriaBtn = document.getElementById('agree-criteria-btn');
     const disagreeCriteriaBtn = document.getElementById('disagree-criteria-btn');
     const donorFormSection = document.getElementById('donor-form-section');
     const donorForm = document.getElementById('donorForm');
-    const hospitalSelect = document.getElementById('hospital'); // Ambil elemen select RS
+    const hospitalSelect = document.getElementById('hospital');
 
     document.addEventListener('DOMContentLoaded', () => {
         criteriaPopup.style.display = 'flex';
-        fetchHospitals(); // Panggil fungsi untuk mengambil daftar rumah sakit
+        fetchHospitals();
     });
 
     agreeCriteriaBtn.addEventListener('click', () => {
@@ -144,17 +155,16 @@
 
     disagreeCriteriaBtn.addEventListener('click', () => {
         alert('Maaf, Anda tidak memenuhi kriteria untuk menjadi pendonor saat ini. Silakan cek kembali nanti.');
-        window.location.href = 'index.html'; // Kembali ke halaman utama atau halaman lain
+        window.location.href = 'index.html';
     });
 
-    // Fungsi baru untuk mengambil daftar rumah sakit dari backend
     async function fetchHospitals() {
         try {
             const response = await fetch(`${BASE_API_URL}get_hospitals.php`);
             const result = await response.json();
 
             if (result.success && result.hospitals) {
-                hospitalSelect.innerHTML = '<option value="">-- Pilih Rumah Sakit --</option>'; // Reset & tambahkan opsi default
+                hospitalSelect.innerHTML = '<option value="">-- Pilih Rumah Sakit --</option>';
                 result.hospitals.forEach(hospital => {
                     const option = document.createElement('option');
                     option.value = hospital.id;
@@ -163,7 +173,7 @@
                 });
             } else {
                 console.error('Gagal memuat daftar rumah sakit:', result.message || 'Terjadi kesalahan tidak diketahui.');
-                hospitalSelect.innerHTML = '<option value="">-- Gagal memuat RS --</option>'; // Tampilkan pesan error di dropdown
+                hospitalSelect.innerHTML = '<option value="">-- Gagal memuat RS --</option>';
                 alert('Gagal memuat daftar rumah sakit. Silakan coba lagi nanti.');
             }
         } catch (error) {
@@ -179,16 +189,14 @@
         const formData = new FormData(donorForm);
         const data = Object.fromEntries(formData.entries());
 
-        // Pastikan NIK adalah string 16 digit
         data.nik = String(data.nik);
         if (data.nik.length !== 16 || !/^\d+$/.test(data.nik)) {
             alert('NIK harus terdiri dari 16 digit angka.');
             return;
         }
 
-        // Pastikan hospital_id dan preferred_time tidak kosong
-        if (!data.hospital_id || !data.preferred_time) {
-            alert('Silakan pilih Rumah Sakit dan masukkan Jam Donor yang Diinginkan.');
+        if (!data.hospital_id || !data.preferred_time || !data.email) { // Menambahkan validasi email
+            alert('Silakan lengkapi semua bidang yang diperlukan (termasuk Rumah Sakit, Jam Donor, dan Email).');
             return;
         }
 
@@ -204,9 +212,8 @@
             const result = await response.json();
 
             if (result.success) {
-                alert(result.message);
+                alert("Pendaftaran telah berhasil, Kamu akan dipanggil melalui email");
                 donorForm.reset();
-                window.location.href = 'index.html'; // Kembali ke halaman utama setelah sukses
             } else {
                 alert('Pendaftaran gagal: ' + (result.message || 'Terjadi kesalahan tidak diketahui.'));
             }

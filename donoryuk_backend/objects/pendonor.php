@@ -16,15 +16,16 @@ class Pendonor{
     public $address;
     public $last_donor_date;
     public $registration_date;
-    public $hospital_id;    // Tambah properti baru ini
-    public $preferred_time; // Tambah properti baru ini
+    public $hospital_id;
+    public $preferred_time;
+    public $email; // Pastikan properti email ada di sini
 
     public function __construct($db){
         $this->conn = $db;
     }
 
     function create(){
-        // Update query INSERT untuk menyertakan hospital_id dan preferred_time
+        // Query INSERT untuk menyertakan semua kolom baru
         $query = "INSERT INTO " . $this->table_name . "
                   SET
                     fullname=:fullname,
@@ -36,9 +37,10 @@ class Pendonor{
                     phone=:phone,
                     address=:address,
                     last_donor_date=:last_donor_date,
-                    hospital_id=:hospital_id,     -- Tambah
-                    preferred_time=:preferred_time, -- Tambah
-                    registration_date=NOW()"; // Tambahkan registration_date jika belum ada di query asli Anda
+                    hospital_id=:hospital_id,
+                    preferred_time=:preferred_time,
+                    email=:email,                 -- Tambah parameter email
+                    registration_date=NOW()";
 
         $stmt = $this->conn->prepare($query);
 
@@ -51,10 +53,9 @@ class Pendonor{
         $this->phone=htmlspecialchars(strip_tags($this->phone));
         $this->address=htmlspecialchars(strip_tags($this->address));
         $this->last_donor_date = ($this->last_donor_date === null || $this->last_donor_date === '') ? null : htmlspecialchars(strip_tags($this->last_donor_date));
-        // Sanitasi properti baru
         $this->hospital_id=htmlspecialchars(strip_tags($this->hospital_id));
         $this->preferred_time=htmlspecialchars(strip_tags($this->preferred_time));
-
+        $this->email=htmlspecialchars(strip_tags($this->email)); // Sanitasi email
 
         $stmt->bindParam(":fullname", $this->fullname);
         $stmt->bindParam(":nik", $this->nik);
@@ -65,9 +66,9 @@ class Pendonor{
         $stmt->bindParam(":phone", $this->phone);
         $stmt->bindParam(":address", $this->address);
         $stmt->bindParam(":last_donor_date", $this->last_donor_date);
-        // Bind parameter properti baru
-        $stmt->bindParam(":hospital_id", $this->hospital_id, PDO::PARAM_INT); // Bind sebagai INT
+        $stmt->bindParam(":hospital_id", $this->hospital_id, PDO::PARAM_INT);
         $stmt->bindParam(":preferred_time", $this->preferred_time);
+        $stmt->bindParam(":email", $this->email); // Bind parameter email
 
         if($stmt->execute()){
             return true;
@@ -75,40 +76,26 @@ class Pendonor{
         return false;
     }
 
-    function nikExists(){ /* ... (tidak ada perubahan di sini) ... */
-        $query = "SELECT id
-                FROM " . $this->table_name . "
-                WHERE nik = ?
-                LIMIT 0,1";
-
+    function nikExists(){
+        $query = "SELECT id FROM " . $this->table_name . " WHERE nik = ? LIMIT 0,1";
         $stmt = $this->conn->prepare( $query );
-
         $this->nik=htmlspecialchars(strip_tags($this->nik));
         $stmt->bindParam(1, $this->nik);
-
         $stmt->execute();
-
-        $num = $stmt->rowCount();
-
-        if($num > 0){
-            return true;
-        }
-        return false;
+        return $stmt->rowCount() > 0;
     }
 
-
     function readAll(){
-        // Update query SELECT untuk menyertakan hospital_id dan preferred_time
-        // Direkomendasikan: JOIN dengan tabel hospitals untuk mendapatkan nama rumah sakit
+        // SELECT query untuk menyertakan semua kolom baru dan JOIN dengan hospitals
         $query = "SELECT
                     p.id, p.fullname, p.nik, p.birthdate, p.gender, p.blood_group, p.rhesus,
                     p.phone, p.address, p.last_donor_date, p.registration_date,
-                    p.hospital_id, p.preferred_time,  -- Tambah
-                    h.name AS hospital_name           -- Tambah JOIN ini jika ingin nama RS
+                    p.hospital_id, p.preferred_time, p.email,  -- Tambah email
+                    h.name AS hospital_name
                 FROM
                     " . $this->table_name . " p
                 LEFT JOIN
-                    hospitals h ON p.hospital_id = h.id -- JOIN dengan tabel hospitals
+                    hospitals h ON p.hospital_id = h.id
                 ORDER BY
                     p.registration_date DESC";
 
@@ -118,11 +105,11 @@ class Pendonor{
         return $stmt;
     }
 
-    // Metode readOne, update, delete (tidak ada perubahan fungsional terkait fitur ini, tapi sertakan properti baru jika digunakan)
     function readOne(){
+        // SELECT query untuk satu pendonor, menyertakan semua kolom baru
         $query = "SELECT
-                    id, fullname, nik, birthdate, gender, blood_group, rhesus, phone, address, last_donor_date, registration_date,
-                    hospital_id, preferred_time -- Tambah
+                    id, fullname, nik, birthdate, gender, blood_group, rhesus, phone, address,
+                    last_donor_date, registration_date, hospital_id, preferred_time, email
                 FROM
                     " . $this->table_name . "
                 WHERE
@@ -146,14 +133,16 @@ class Pendonor{
             $this->address = $row['address'];
             $this->last_donor_date = $row['last_donor_date'];
             $this->registration_date = $row['registration_date'];
-            $this->hospital_id = $row['hospital_id']; // Tambah
-            $this->preferred_time = $row['preferred_time']; // Tambah
+            $this->hospital_id = $row['hospital_id'];
+            $this->preferred_time = $row['preferred_time'];
+            $this->email = $row['email']; // Isi properti email
             return true;
         }
         return false;
     }
 
     function update(){
+        // UPDATE query untuk semua kolom baru
         $query = "UPDATE " . $this->table_name . "
                   SET
                     fullname=:fullname,
@@ -165,8 +154,9 @@ class Pendonor{
                     phone=:phone,
                     address=:address,
                     last_donor_date=:last_donor_date,
-                    hospital_id=:hospital_id,     -- Tambah
-                    preferred_time=:preferred_time -- Tambah
+                    hospital_id=:hospital_id,
+                    preferred_time=:preferred_time,
+                    email=:email                  -- Tambah parameter email
                   WHERE
                     id = :id";
 
@@ -182,10 +172,9 @@ class Pendonor{
         $this->address=htmlspecialchars(strip_tags($this->address));
         $this->last_donor_date = ($this->last_donor_date === null || $this->last_donor_date === '') ? null : htmlspecialchars(strip_tags($this->last_donor_date));
         $this->id=htmlspecialchars(strip_tags($this->id));
-        // Sanitasi properti baru
         $this->hospital_id=htmlspecialchars(strip_tags($this->hospital_id));
         $this->preferred_time=htmlspecialchars(strip_tags($this->preferred_time));
-
+        $this->email=htmlspecialchars(strip_tags($this->email)); // Sanitasi email
 
         $stmt->bindParam(":fullname", $this->fullname);
         $stmt->bindParam(":nik", $this->nik);
@@ -196,9 +185,9 @@ class Pendonor{
         $stmt->bindParam(":phone", $this->phone);
         $stmt->bindParam(":address", $this->address);
         $stmt->bindParam(":last_donor_date", $this->last_donor_date);
-        // Bind parameter properti baru
         $stmt->bindParam(":hospital_id", $this->hospital_id, PDO::PARAM_INT);
         $stmt->bindParam(":preferred_time", $this->preferred_time);
+        $stmt->bindParam(":email", $this->email); // Bind parameter email
         $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
 
         if($stmt->execute()){
@@ -207,11 +196,9 @@ class Pendonor{
         return false;
     }
 
-    function delete(){ /* ... (tidak ada perubahan di sini) ... */
+    function delete(){
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
-
         $stmt = $this->conn->prepare($query);
-
         $this->id=htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
 

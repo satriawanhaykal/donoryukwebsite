@@ -1,11 +1,10 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, OPTIONS"); // Tambahkan OPTIONS
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-// Tangani preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -29,9 +28,10 @@ if (
     !empty($data->blood_group) &&
     !empty($data->rhesus) &&
     !empty($data->phone) &&
+    !empty($data->email) && // Menambahkan validasi untuk email
     !empty($data->address) &&
-    !empty($data->hospital_id) &&     // Tambah validasi untuk hospital_id
-    !empty($data->preferred_time)    // Tambah validasi untuk preferred_time
+    !empty($data->hospital_id) &&
+    !empty($data->preferred_time)
 ) {
     $pendonor->fullname = $data->fullname;
     $pendonor->nik = $data->nik;
@@ -40,10 +40,10 @@ if (
     $pendonor->blood_group = $data->blood_group;
     $pendonor->rhesus = $data->rhesus;
     $pendonor->phone = $data->phone;
+    $pendonor->email = $data->email; // Menambahkan assign untuk email
     $pendonor->address = $data->address;
     $pendonor->last_donor_date = isset($data->last_donor_date) && !empty($data->last_donor_date) ? $data->last_donor_date : null;
 
-    // Assign properti baru dari data yang diterima
     $pendonor->hospital_id = $data->hospital_id;
     $pendonor->preferred_time = $data->preferred_time;
 
