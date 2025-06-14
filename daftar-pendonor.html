@@ -108,6 +108,14 @@
             <label for="last-donor-date">Tanggal Donor Terakhir (Opsional):</label>
             <input type="date" id="last-donor-date" name="last_donor_date">
 
+            <label for="hospital">Pilih Rumah Sakit:</label>
+            <select id="hospital" name="hospital_id" required>
+                <option value="">-- Memuat Rumah Sakit --</option>
+            </select>
+
+            <label for="preferred-time">Jam Donor yang Diinginkan:</label>
+            <input type="time" id="preferred-time" name="preferred_time" required>
+
             <button type="submit" class="register">Daftar sebagai Pendonor</button>
         </form>
     </div>
@@ -115,7 +123,6 @@
 
   <script src="navbar-script.js"></script>
   <script>
-    // Pastikan BASE_API_URL sudah benar
     const BASE_API_URL = 'https://donoryuk.xyz/donoryuk_backend/api/';
 
     const criteriaPopup = document.getElementById('criteria-popup');
@@ -123,21 +130,48 @@
     const disagreeCriteriaBtn = document.getElementById('disagree-criteria-btn');
     const donorFormSection = document.getElementById('donor-form-section');
     const donorForm = document.getElementById('donorForm');
+    const hospitalSelect = document.getElementById('hospital'); // Ambil elemen select RS
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Tampilkan pop-up saat halaman dimuat
-        criteriaPopup.style.display = 'flex'; // Gunakan flex untuk centering
+        criteriaPopup.style.display = 'flex';
+        fetchHospitals(); // Panggil fungsi untuk mengambil daftar rumah sakit
     });
 
     agreeCriteriaBtn.addEventListener('click', () => {
-        criteriaPopup.style.display = 'none'; // Sembunyikan pop-up
-        donorFormSection.style.display = 'block'; // Tampilkan form
+        criteriaPopup.style.display = 'none';
+        donorFormSection.style.display = 'block';
     });
 
     disagreeCriteriaBtn.addEventListener('click', () => {
         alert('Maaf, Anda tidak memenuhi kriteria untuk menjadi pendonor saat ini. Silakan cek kembali nanti.');
-        window.location.href = 'konfirmasi-pendaftaran-pendonor.html'; // Kembali ke halaman utama
+        window.location.href = 'index.html'; // Kembali ke halaman utama atau halaman lain
     });
+
+    // Fungsi baru untuk mengambil daftar rumah sakit dari backend
+    async function fetchHospitals() {
+        try {
+            const response = await fetch(`${BASE_API_URL}get_hospitals.php`);
+            const result = await response.json();
+
+            if (result.success && result.hospitals) {
+                hospitalSelect.innerHTML = '<option value="">-- Pilih Rumah Sakit --</option>'; // Reset & tambahkan opsi default
+                result.hospitals.forEach(hospital => {
+                    const option = document.createElement('option');
+                    option.value = hospital.id;
+                    option.textContent = hospital.name;
+                    hospitalSelect.appendChild(option);
+                });
+            } else {
+                console.error('Gagal memuat daftar rumah sakit:', result.message || 'Terjadi kesalahan tidak diketahui.');
+                hospitalSelect.innerHTML = '<option value="">-- Gagal memuat RS --</option>'; // Tampilkan pesan error di dropdown
+                alert('Gagal memuat daftar rumah sakit. Silakan coba lagi nanti.');
+            }
+        } catch (error) {
+            console.error('Error saat mengambil daftar rumah sakit:', error);
+            hospitalSelect.innerHTML = '<option value="">-- Error koneksi RS --</option>';
+            alert('Terjadi kesalahan saat menghubungi server untuk daftar rumah sakit.');
+        }
+    }
 
     donorForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -145,12 +179,16 @@
         const formData = new FormData(donorForm);
         const data = Object.fromEntries(formData.entries());
 
-        // Konversi NIK menjadi string (jika input type="text")
+        // Pastikan NIK adalah string 16 digit
         data.nik = String(data.nik);
-
-        // Tambahan validasi sisi klien sederhana untuk NIK
         if (data.nik.length !== 16 || !/^\d+$/.test(data.nik)) {
             alert('NIK harus terdiri dari 16 digit angka.');
+            return;
+        }
+
+        // Pastikan hospital_id dan preferred_time tidak kosong
+        if (!data.hospital_id || !data.preferred_time) {
+            alert('Silakan pilih Rumah Sakit dan masukkan Jam Donor yang Diinginkan.');
             return;
         }
 
@@ -167,8 +205,8 @@
 
             if (result.success) {
                 alert(result.message);
-                donorForm.reset(); // Reset form
-                window.location.href = 'index.html'; // Kembali ke halaman utama
+                donorForm.reset();
+                window.location.href = 'index.html'; // Kembali ke halaman utama setelah sukses
             } else {
                 alert('Pendaftaran gagal: ' + (result.message || 'Terjadi kesalahan tidak diketahui.'));
             }
